@@ -1,0 +1,11 @@
+This is a project attempting to make a version of a pong game.
+
+test pong - a previous project where a picture bounces from left to right. This was a training exercise and the principles learned will help to make the next version
+
+pong - a version of pong, to keep it within the realm of my ability the first version will have the following features:
+
+1) the paddles and ball move at constant and same speed
+2) the oppontent just moves up and down continuously (no advanced AI)
+3) there is an single button for the player paddle that changes the direction
+4) scoreboard
+5) reinitialise the ball to a random location and direction angle toward the player paddle
