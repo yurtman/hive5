@@ -14,6 +14,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
@@ -28,7 +29,8 @@ class Ui_MainWindow
 public:
     QWidget *centralWidget;
     QPushButton *pushButton;
-    QPushButton *pushButton_2;
+    QLabel *lefpaddle;
+    QLabel *rightpaddle;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -38,14 +40,20 @@ public:
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
         MainWindow->resize(645, 389);
+        MainWindow->setStyleSheet(QStringLiteral("background-color: rgb(85, 0, 0);"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         pushButton = new QPushButton(centralWidget);
         pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setGeometry(QRect(10, 280, 75, 23));
-        pushButton_2 = new QPushButton(centralWidget);
-        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
-        pushButton_2->setGeometry(QRect(10, 310, 75, 23));
+        pushButton->setGeometry(QRect(250, 10, 121, 23));
+        lefpaddle = new QLabel(centralWidget);
+        lefpaddle->setObjectName(QStringLiteral("lefpaddle"));
+        lefpaddle->setGeometry(QRect(50, 100, 20, 100));
+        lefpaddle->setPixmap(QPixmap(QString::fromUtf8("../../../../Pictures/Geek folder and memes/freedom.png")));
+        rightpaddle = new QLabel(centralWidget);
+        rightpaddle->setObjectName(QStringLiteral("rightpaddle"));
+        rightpaddle->setGeometry(QRect(580, 100, 20, 100));
+        rightpaddle->setPixmap(QPixmap(QString::fromUtf8("../../../../Pictures/Geek folder and memes/8LXck.jpg")));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -66,8 +74,9 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
-        pushButton->setText(QApplication::translate("MainWindow", "PushButton", 0));
-        pushButton_2->setText(QApplication::translate("MainWindow", "PushButton", 0));
+        pushButton->setText(QApplication::translate("MainWindow", "Change Direction", 0));
+        lefpaddle->setText(QString());
+        rightpaddle->setText(QString());
     } // retranslateUi
 
 };
