@@ -16,19 +16,24 @@ public:
     ~MainWindow();
 
 private slots:
-  void on_button_pressed();
   void timer();
+  void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
   bool leftpaddle_up;
   bool rightpaddle_up;
-  bool ball_right;
-  bool ball_up;
+  bool ball_direction_right;
+  bool ball_direction_up;
   void standardball();
-  void standardleftpaddle();
-  void standardrightpaddle();
+  void AI_simple_leftpaddle();
+  void AI_perfect_leftpaddle();
+  void AI_human_leftpaddle();
+  void AI_simple_rightpaddle();
+  void AI_perfect_rightpaddle();
+  void AI_human_rightpaddle();
   void reinitialise();
+  void fieldalign();
 };
 
 #endif // MAINWINDOW_H
