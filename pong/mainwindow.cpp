@@ -104,8 +104,8 @@ void MainWindow::timer()
 
     //left paddle behaviour
         //this->AI_perfect_leftpaddle();    //perfect
-        this->AI_human_leftpaddle();      //perfect human like
-        //this->AI_simple_leftpaddle();       //simple up and down
+        //this->AI_human_leftpaddle();      //perfect human like
+        this->AI_simple_leftpaddle();       //simple up and down
 
     //right paddle behaviour
         this->AI_perfect_rightpaddle();     //perfect
@@ -215,18 +215,18 @@ void MainWindow::standardball()
     if (ball_left - ball_dx < window_left)
         {
             new_ball_direction_right = true;
-            int P2newscore = P2score + 1;                   //add one to score
+            const int P2newscore = P2score + 1;                   //add one to score
             this->ui->rightscore->setValue(P2newscore);     //display new score
-            P2score = P2newscore;                           //save new score as score
+            P2score = P2newscore;                           //save new score as score (too local?)
             //this->reinitialise();                         //reinitialise  ???
         }
     //if ball goes beyond right, add score to P1 and reinitialise
     if (ball_right + ball_dx > window_right)
         {
             new_ball_direction_right = false;
-            int P1newscore = P1score +1;                    //add 1 to score
+            const int P1newscore = P1score +1;                    //add 1 to score
             this->ui->leftscore->setValue(P1newscore);      //display new score
-            P1score = P1newscore;                           //save newscore as score
+            P1score = P1newscore;                           //save newscore as score (too local?)
             //this->ui->ball->setGeometry(100,100,20,20);   //reinitialise  ???
             //this->reinitialise();                         //reinitialise  ???
         }
@@ -276,6 +276,7 @@ void MainWindow::AI_simple_leftpaddle()
 
     //left paddle variables
     const int leftpaddle_dy = 1;
+    const int leftpaddle_left = this->ui->leftpaddle->geometry().left();
     const int leftpaddle_top = this->ui->leftpaddle->geometry().top();
     const int leftpaddle_bottom = this->ui->leftpaddle->geometry().bottom();
     const int leftpaddle_width = this->ui->leftpaddle->geometry().width();
@@ -309,11 +310,10 @@ void MainWindow::AI_simple_leftpaddle()
 
     //change left paddle coordinates to new coordinates
     this->ui->leftpaddle->setGeometry(
-                this->ui->leftpaddle->geometry().x(),       //x coordinate
+                leftpaddle_left,                            //x coordinate
                 move_leftpaddle,                            //y coordinate
                 leftpaddle_width,                           //width
                 leftpaddle_height);                         //height
-
 
     //store left paddle direction
     leftpaddle_up = new_leftpaddle_up;
@@ -377,6 +377,7 @@ void MainWindow::AI_human_leftpaddle()
     //window variables (current top, current bottom, current left, current right)
     const int window_top = 0;
     const int window_bottom = this->geometry().height();    //not bottom!! (not sure why)
+    const int window_center_y = (this->height()/2);
 
     //ball variables
     const int ball_top = this->ui->ball->geometry().top();
@@ -384,12 +385,27 @@ void MainWindow::AI_human_leftpaddle()
     const int ball_center_y = ball_top + 0.5*ball_height;
 
     //left paddle variables
+    const int leftpaddle_dy = 1;
     const int leftpaddle_left = this->ui->leftpaddle->geometry().left();
+    const int leftpaddle_right = this->ui->leftpaddle->geometry().right();
+    const int leftpaddle_top = this->ui->leftpaddle->geometry().top();
     const int leftpaddle_width = this->ui->leftpaddle->geometry().width();
     const int leftpaddle_height = this->ui->leftpaddle->geometry().height();
+    const int leftpaddle_center_y = leftpaddle_top + 0.5*leftpaddle_height;
 
-    //when ball is incoming, if not at edge of window, move left paddle with ball
-    if ((ball_direction_right == false) && (ball_center_y > window_top + 0.5*leftpaddle_height) && (ball_center_y < (window_bottom - 0.5*leftpaddle_height)))
+    //define boolean of quantum step and initialise at current value
+    bool new_leftpaddle_up = leftpaddle_up;
+
+    //when ball is outgoing, move to center
+    if (ball_direction_right == true && (leftpaddle_center_y < window_center_y))
+    {
+        leftpaddle_up = false;
+    }
+    if (ball_direction_right == true && (leftpaddle_center_y > window_center_y))
+    {
+        leftpaddle_up = true;
+    }
+    if (ball_direction_right == true && (leftpaddle_center_y == window_center_y))
     {
         this->ui->leftpaddle->setGeometry(
                     leftpaddle_left,                        //x coordinate
@@ -397,6 +413,55 @@ void MainWindow::AI_human_leftpaddle()
                     leftpaddle_width,                       //width
                     leftpaddle_height);                     //height
     }
+
+    //when ball is incoming, if not at edge of window and paddle above ball, move left paddle up
+    if ((ball_direction_right == false)                             //incoming ball
+       && (ball_center_y > window_top + 0.5*leftpaddle_height)      //not at top edge
+       && (ball_center_y < (window_bottom - 0.5*leftpaddle_height)) //not at bottom edge
+       && (ball_center_y > leftpaddle_center_y))                    //left paddle above ball
+    {
+        new_leftpaddle_up = false;                                  //move left paddle down
+    }
+
+    //when ball is incoming, if not at edge of window and paddle below ball, move left paddle up
+    if ((ball_direction_right == false)                             //incoming ball
+       && (ball_center_y > window_top + 0.5*leftpaddle_height)      //not at top egdge
+       && (ball_center_y < (window_bottom - 0.5*leftpaddle_height)) //not at bottom edge
+       && (ball_center_y < leftpaddle_center_y))                    //left paddle below ball
+    {
+        new_leftpaddle_up = true;                                   //move left paddle up
+    }
+
+    //when ball is incoming, if not at edge of window and paddle at same height as ball, move left paddle with ball
+    if ((ball_direction_right == false)                             //incoming ball
+       && (ball_center_y > window_top + 0.5*leftpaddle_height)      //not at top edge
+       && (ball_center_y < (window_bottom - 0.5*leftpaddle_height)) //not at bottom edge
+       && (ball_center_y == leftpaddle_center_y))                   //left paddle at same height as ball
+    {
+        this->ui->leftpaddle->setGeometry(                      //move left paddle with ball
+                    leftpaddle_left,                            //x coordinate
+                    move_leftpaddle,                            //y coordinate
+                    leftpaddle_width,                           //width
+                    leftpaddle_height);                         //height
+    }
+
+    //let left paddle move in y
+    int move_leftpaddle = 1;
+    if (new_leftpaddle_up == true)
+    {
+        move_leftpaddle = leftpaddle_top - leftpaddle_dy;
+    }
+    else
+    {
+        move_leftpaddle = leftpaddle_top + leftpaddle_dy;
+    }
+
+    //change left paddle coordinates to new coordinates
+    this->ui->leftpaddle->setGeometry(
+                leftpaddle_left,                            //x coordinate
+                ball_center_y - 0.5*leftpaddle_height,             //y coordinate
+                leftpaddle_width,                           //width
+                leftpaddle_height);                         //height
 }
 
 //HUMAN-LIKE RIGHT PADDLE AI BEHAVIOUR
@@ -428,7 +493,7 @@ void MainWindow::AI_human_rightpaddle()
 }
 
 
-//PERFECT LEFT PADDLE AI BEHAVIOUR
+//PERFECT LEFT PADDLE AI BEHAVIOUR (currently still cheating by teleporting)
 void MainWindow::AI_perfect_leftpaddle()
 {
     //window variables (current top, current bottom, current left, current right)
@@ -456,7 +521,7 @@ void MainWindow::AI_perfect_leftpaddle()
     }
 }
 
-//PERFECT RIGHT PADDLE AI BEHAVIOUR
+//PERFECT RIGHT PADDLE AI BEHAVIOUR (currently still cheating by teleporting)
 void MainWindow::AI_perfect_rightpaddle()
 {
     //window variables (current top, current bottom, current left, current right)
